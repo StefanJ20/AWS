@@ -10,6 +10,9 @@ from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 def index(request):
     return render(request, "index.html")
 
+def memes(request):
+    return render(request, "memes.html")
+
 def trim_by_turns(history, max_turns=6):
     return history[-max_turns:]
 

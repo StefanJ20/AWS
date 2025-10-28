@@ -14,11 +14,15 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url("{% static 'gifs/nature.gif' %}") no-repeat center center fixed;
+            background-color: rgb(0, 0, 0);
+            transition: background-color 0.5s ease;
             background-size: cover;
             opacity: 1;
-            filter: blur(10px);
             z-index: -1;
+        }
+
+        body.dark::before {
+            background-color: rgb(30, 30, 30);
         }
 
         body {
@@ -28,20 +32,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        .chat-container {
-            background: #ebe8e8;
-            padding: 2rem 2.5rem;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 350px;
-            position: relative;
-            border: 1px solid #d1d5db;
-            top: 10rem;
-            
         }
         .chat-input {
             width: 100%;
@@ -71,6 +61,13 @@
             overflow-y: auto;
             margin-bottom: 1rem;
             color: #ffffff; 
+            opacity: 0;
+        }
+        .chat-input {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            right: 325px;
         }
     </style>
 </head>
@@ -113,6 +110,7 @@
             const form = document.getElementById('chat-form');
             const input = document.getElementById('user-input');
             const out = document.getElementById('chat-output');
+            const length = out.textContent.length;
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -143,8 +141,7 @@
                     if (!res.ok) {
                       out.textContent += `Error ${res.status}: ${payload.error || res.statusText}\n\n`;
                     } else {
-                      out.textContent += `You: ${msg}\n\n`;
-                      out.textContent += `Cat with a Fucking Hat: ${payload.reply}\n\n`;
+                      typeText(out, `You: ${msg}\n\nDude: ${payload.reply}\n\n`, 10);
                     }
                     out.scrollTo({ top: out.scrollHeight, behavior: 'smooth' });
                 } catch (err) {
@@ -153,6 +150,25 @@
                     form.reset();
                     input.focus();
                 }
+                function typeText(out, text, index) {
+                    out.textContent = '';
+                    let i = 0;
+                    (function type() {
+                        if (i < text.length) {
+                            out.textContent += text[i++];
+                            out.scrollTop = out.scrollHeight;
+                            setTimeout(type, index);
+                        }
+                    })();
+                }
+
+                const chatInput = document.querySelector('.chat-input');
+                chatInput.style.transition = 'right 0.5s ease';
+                out.style.transition = 'opacity 0.5s ease';
+                document.body.classList.add('dark');
+                out.style.opacity = 1;
+                chatInput.style.right = '0px';
+
             });
 
             input.addEventListener('keydown', (e) => {
